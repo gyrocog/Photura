@@ -1,0 +1,35 @@
+<UserControl x:Class="Photura.Views.Scenes.FiltersScene"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:controls="clr-namespace:Photura.Controls">
+    <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="0,0,4,0">
+        <StackPanel Margin="16,16,16,16">
+
+            <TextBlock Text="FILTERS"
+                       FontSize="10" FontWeight="SemiBold" FontFamily="Segoe UI"
+                       Foreground="{DynamicResource TextSecondaryBrush}"
+                       Margin="0,0,0,12"/>
+
+            <WrapPanel x:Name="FilterPanel" Margin="0,0,0,16"/>
+
+            <Separator Style="{DynamicResource PanelSeparatorStyle}"/>
+
+            <TextBlock Text="INTENSITY"
+                       FontSize="10" FontWeight="SemiBold" FontFamily="Segoe UI"
+                       Foreground="{DynamicResource TextSecondaryBrush}"
+                       Margin="0,0,0,12"/>
+
+            <controls:EditSliderRow x:Name="IntensitySlider"
+                                    Label="Filter Strength"
+                                    Minimum="0" Maximum="100" Value="100"
+                                    DefaultValue="100"
+                                    ValueChanged="IntensitySlider_ValueChanged"/>
+
+            <TextBlock Text="Double-click slider to reset to 100%"
+                       FontSize="10" FontFamily="Segoe UI"
+                       Foreground="{DynamicResource TextSecondaryBrush}"
+                       Margin="0,4,0,0"/>
+
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

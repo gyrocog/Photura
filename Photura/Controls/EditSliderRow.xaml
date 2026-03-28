@@ -1,0 +1,33 @@
+<UserControl x:Class="Photura.Controls.EditSliderRow"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Margin="0,0,0,14">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Label row -->
+        <Grid Grid.Row="0" Margin="0,0,0,5">
+            <TextBlock x:Name="LabelText"
+                       Text="Label"
+                       FontSize="12"
+                       FontFamily="Segoe UI"
+                       Foreground="{DynamicResource TextPrimaryBrush}"/>
+            <TextBlock x:Name="ValueText"
+                       Text="0"
+                       FontSize="12"
+                       FontFamily="Segoe UI"
+                       FontWeight="SemiBold"
+                       HorizontalAlignment="Right"
+                       Foreground="{DynamicResource AccentBrush}"/>
+        </Grid>
+
+        <!-- Slider row -->
+        <Slider x:Name="TheSlider"
+                Grid.Row="1"
+                Style="{DynamicResource EditSliderStyle}"
+                ValueChanged="TheSlider_ValueChanged"/>
+    </Grid>
+</UserControl>

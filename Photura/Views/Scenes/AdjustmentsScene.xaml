@@ -1,0 +1,77 @@
+<UserControl x:Class="Photura.Views.Scenes.AdjustmentsScene"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:controls="clr-namespace:Photura.Controls">
+    <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="0,0,4,0">
+        <StackPanel Margin="16,16,16,16">
+
+            <!-- LIGHT group -->
+            <TextBlock Text="LIGHT"
+                       FontSize="10" FontWeight="SemiBold"
+                       FontFamily="Segoe UI"
+                       Foreground="{DynamicResource TextSecondaryBrush}"
+                       Margin="0,0,0,12"/>
+
+            <controls:EditSliderRow x:Name="BrightnessSlider"
+                                    Label="Brightness"
+                                    Minimum="-100" Maximum="100" Value="0"
+                                    ValueChanged="Slider_ValueChanged"/>
+            <controls:EditSliderRow x:Name="ExposureSlider"
+                                    Label="Exposure"
+                                    Minimum="-100" Maximum="100" Value="0"
+                                    ValueChanged="Slider_ValueChanged"/>
+            <controls:EditSliderRow x:Name="ContrastSlider"
+                                    Label="Contrast"
+                                    Minimum="-100" Maximum="100" Value="0"
+                                    ValueChanged="Slider_ValueChanged"/>
+            <controls:EditSliderRow x:Name="HighlightsSlider"
+                                    Label="Highlights"
+                                    Minimum="-100" Maximum="100" Value="0"
+                                    ValueChanged="Slider_ValueChanged"/>
+            <controls:EditSliderRow x:Name="ShadowsSlider"
+                                    Label="Shadows"
+                                    Minimum="-100" Maximum="100" Value="0"
+                                    ValueChanged="Slider_ValueChanged"/>
+            <controls:EditSliderRow x:Name="VignetteSlider"
+                                    Label="Vignette"
+                                    Minimum="0" Maximum="100" Value="0"
+                                    ValueChanged="Slider_ValueChanged"/>
+
+            <Separator Style="{DynamicResource PanelSeparatorStyle}"/>
+
+            <!-- COLOR group -->
+            <TextBlock Text="COLOR"
+                       FontSize="10" FontWeight="SemiBold"
+                       FontFamily="Segoe UI"
+                       Foreground="{DynamicResource TextSecondaryBrush}"
+                       Margin="0,0,0,12"/>
+
+            <controls:EditSliderRow x:Name="SaturationSlider"
+                                    Label="Saturation"
+                                    Minimum="-100" Maximum="100" Value="0"
+                                    ValueChanged="Slider_ValueChanged"/>
+            <controls:EditSliderRow x:Name="WarmthSlider"
+                                    Label="Warmth"
+                                    Minimum="-100" Maximum="100" Value="0"
+                                    ValueChanged="Slider_ValueChanged"/>
+            <controls:EditSliderRow x:Name="TintSlider"
+                                    Label="Tint"
+                                    Minimum="-100" Maximum="100" Value="0"
+                                    ValueChanged="Slider_ValueChanged"/>
+            <controls:EditSliderRow x:Name="SharpnessSlider"
+                                    Label="Sharpness"
+                                    Minimum="0" Maximum="100" Value="0"
+                                    ValueChanged="Slider_ValueChanged"/>
+
+            <Separator Style="{DynamicResource PanelSeparatorStyle}"/>
+
+            <!-- Reset button -->
+            <Button Style="{DynamicResource ToolButtonStyle}"
+                    HorizontalAlignment="Stretch"
+                    Click="ResetAll_Click">
+                ⟳  Reset Adjustments
+            </Button>
+
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>
