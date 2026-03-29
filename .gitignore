@@ -7,3 +7,4 @@ packages/
 *.nupkg
 Thumbs.db
 .DS_Store
+*.msi

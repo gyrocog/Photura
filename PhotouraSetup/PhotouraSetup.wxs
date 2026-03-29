@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs"
+     xmlns:ui="http://wixtoolset.org/schemas/v4/wxs/ui">
+
+  <Package Name="Photura"
+           Manufacturer="Goran"
+           Version="1.0.0"
+           UpgradeCode="4e2cdd23-3da1-4ae7-9e27-101493e2ebb4"
+           Language="1033"
+           Codepage="1252"
+           Scope="perMachine">
+
+    <SummaryInformation Keywords="Installer" Description="Photura Image Viewer"/>
+
+    <MajorUpgrade DowngradeErrorMessage="A newer version of Photura is already installed." />
+
+    <MediaTemplate EmbedCab="yes" />
+
+    <ui:WixUI Id="WixUI_InstallDir" />
+    <Property Id="WIXUI_INSTALLDIR" Value="INSTALLFOLDER" />
+
+    <!-- Point to our custom license -->
+    <WixVariable Id="WixUILicenseRtf" Value="License.rtf" />
+
+    <!-- Force 64-bit install path -->
+    <Property Id="MSIINSTALLPERUSER" Value="0"/>
+
+    <Feature Id="Main" Title="Photura" Level="1">
+      <ComponentGroupRef Id="ProductComponents" />
+      <ComponentGroupRef Id="RuntimeComponents" />
+      <ComponentRef Id="ApplicationShortcut" />
+      <ComponentRef Id="RegistryEntries" />
+    </Feature>
+
+    <!-- Directory structure -->
+    <StandardDirectory Id="ProgramFiles64Folder">
+      <Directory Id="INSTALLFOLDER" Name="Photura">
+        <Directory Id="RuntimesFolder" Name="runtimes">
+          <Directory Id="WinX64Folder" Name="win-x64">
+            <Directory Id="WinX64NativeFolder" Name="native"/>
+          </Directory>
+        </Directory>
+      </Directory>
+    </StandardDirectory>
+
+    <StandardDirectory Id="ProgramMenuFolder">
+      <Directory Id="ApplicationProgramsFolder" Name="Photura"/>
+    </StandardDirectory>
+
+    <!-- Start Menu shortcut -->
+    <DirectoryRef Id="ApplicationProgramsFolder">
+      <Component Id="ApplicationShortcut" Guid="*">
+        <Shortcut Id="ApplicationStartMenuShortcut"
+                  Name="Photura"
+                  Description="Photura Image Viewer"
+                  Target="[INSTALLFOLDER]Photura.exe"
+                  WorkingDirectory="INSTALLFOLDER"/>
+        <RemoveFolder Id="CleanUpShortCut"
+                      Directory="ApplicationProgramsFolder"
+                      On="uninstall"/>
+        <RegistryValue Root="HKCU"
+                       Key="Software\Photura\Installer"
+                       Name="StartMenuShortcut"
+                       Type="integer" Value="1"
+                       KeyPath="yes"/>
+      </Component>
+    </DirectoryRef>
+
+    <!-- Registry entries -->
+    <DirectoryRef Id="INSTALLFOLDER">
+      <Component Id="RegistryEntries" Guid="*">
+
+        <RegistryKey Root="HKLM" Key="SOFTWARE\Classes\Applications\Photura.exe">
+          <RegistryValue Type="string" Name="FriendlyAppName" Value="Photura"/>
+        </RegistryKey>
+        <RegistryKey Root="HKLM"
+                     Key="SOFTWARE\Classes\Applications\Photura.exe\shell\open\command">
+          <RegistryValue Type="string"
+                         Value="&quot;[INSTALLFOLDER]Photura.exe&quot; &quot;%1&quot;"/>
+        </RegistryKey>
+
+        <RegistryKey Root="HKLM"
+                     Key="SOFTWARE\Classes\Applications\Photura.exe\SupportedTypes">
+          <RegistryValue Type="string" Name=".jpg"  Value=""/>
+          <RegistryValue Type="string" Name=".jpeg" Value=""/>
+          <RegistryValue Type="string" Name=".png"  Value=""/>
+          <RegistryValue Type="string" Name=".bmp"  Value=""/>
+          <RegistryValue Type="string" Name=".gif"  Value=""/>
+          <RegistryValue Type="string" Name=".tif"  Value=""/>
+          <RegistryValue Type="string" Name=".tiff" Value=""/>
+          <RegistryValue Type="string" Name=".webp" Value=""/>
+          <RegistryValue Type="string" Name=".psd"  Value=""/>
+          <RegistryValue Type="string" Name=".ico"  Value=""/>
+          <RegistryValue Type="string" Name=".heic" Value=""/>
+          <RegistryValue Type="string" Name=".heif" Value=""/>
+          <RegistryValue Type="string" Name=".dng"  Value=""/>
+          <RegistryValue Type="string" Name=".cr2"  Value=""/>
+          <RegistryValue Type="string" Name=".nef"  Value=""/>
+          <RegistryValue Type="string" Name=".arw"  Value=""/>
+          <RegistryValue Type="string" Name=".orf"  Value=""/>
+          <RegistryValue Type="string" Name=".rw2"  Value=""/>
+          <RegistryValue Type="string" Name=".raf"  Value=""/>
+          <RegistryValue Type="string" Name=".avif" Value=""/>
+        </RegistryKey>
+
+        <!-- Open With registration for each format -->
+        <RegistryKey Root="HKLM" Key="SOFTWARE\Classes\.jpg\OpenWithList\Photura.exe">
+          <RegistryValue Type="string" Value=""/>
+        </RegistryKey>
+        <RegistryKey Root="HKLM" Key="SOFTWARE\Classes\.jpeg\OpenWithList\Photura.exe">
+          <RegistryValue Type="string" Value=""/>
+        </RegistryKey>
+        <RegistryKey Root="HKLM" Key="SOFTWARE\Classes\.png\OpenWithList\Photura.exe">
+          <RegistryValue Type="string" Value=""/>
+        </RegistryKey>
+        <RegistryKey Root="HKLM" Key="SOFTWARE\Classes\.bmp\OpenWithList\Photura.exe">
+          <RegistryValue Type="string" Value=""/>
+        </RegistryKey>
+        <RegistryKey Root="HKLM" Key="SOFTWARE\Classes\.gif\OpenWithList\Photura.exe">
+          <RegistryValue Type="string" Value=""/>
+        </RegistryKey>
+        <RegistryKey Root="HKLM" Key="SOFTWARE\Classes\.tif\OpenWithList\Photura.exe">
+          <RegistryValue Type="string" Value=""/>
+        </RegistryKey>
+        <RegistryKey Root="HKLM" Key="SOFTWARE\Classes\.tiff\OpenWithList\Photura.exe">
+          <RegistryValue Type="string" Value=""/>
+        </RegistryKey>
+        <RegistryKey Root="HKLM" Key="SOFTWARE\Classes\.webp\OpenWithList\Photura.exe">
+          <RegistryValue Type="string" Value=""/>
+        </RegistryKey>
+        <RegistryKey Root="HKLM" Key="SOFTWARE\Classes\.psd\OpenWithList\Photura.exe">
+          <RegistryValue Type="string" Value=""/>
+        </RegistryKey>
+        <RegistryKey Root="HKLM" Key="SOFTWARE\Classes\.heic\OpenWithList\Photura.exe">
+          <RegistryValue Type="string" Value=""/>
+        </RegistryKey>
+        <RegistryKey Root="HKLM" Key="SOFTWARE\Classes\.dng\OpenWithList\Photura.exe">
+          <RegistryValue Type="string" Value=""/>
+        </RegistryKey>
+        <RegistryKey Root="HKLM" Key="SOFTWARE\Classes\.cr2\OpenWithList\Photura.exe">
+          <RegistryValue Type="string" Value=""/>
+        </RegistryKey>
+        <RegistryKey Root="HKLM" Key="SOFTWARE\Classes\.nef\OpenWithList\Photura.exe">
+          <RegistryValue Type="string" Value=""/>
+        </RegistryKey>
+        <RegistryKey Root="HKLM" Key="SOFTWARE\Classes\.arw\OpenWithList\Photura.exe">
+          <RegistryValue Type="string" Value=""/>
+        </RegistryKey>
+
+        <RegistryValue Root="HKLM"
+                       Key="SOFTWARE\Photura"
+                       Name="InstallPath"
+                       Type="string"
+                       Value="[INSTALLFOLDER]Photura.exe"
+                       KeyPath="yes"/>
+      </Component>
+    </DirectoryRef>
+
+  </Package>
+
+  <!-- Main application files -->
+  <Fragment>
+    <ComponentGroup Id="ProductComponents" Directory="INSTALLFOLDER">
+      <Component Id="MainExecutable" Guid="*">
+        <File Id="PhotouraExe"
+              Source="..\Photura\bin\x64\Release\net10.0-windows\Photura.exe"
+              KeyPath="yes"/>
+      </Component>
+      <Component Id="AppDll" Guid="*">
+        <File Source="..\Photura\bin\x64\Release\net10.0-windows\Photura.dll"/>
+      </Component>
+      <Component Id="AppDllConfig" Guid="*">
+        <File Source="..\Photura\bin\x64\Release\net10.0-windows\Photura.dll.config"/>
+      </Component>
+      <Component Id="RuntimeConfig" Guid="*">
+        <File Source="..\Photura\bin\x64\Release\net10.0-windows\Photura.runtimeconfig.json"/>
+      </Component>
+      <Component Id="DepsJson" Guid="*">
+        <File Source="..\Photura\bin\x64\Release\net10.0-windows\Photura.deps.json"/>
+      </Component>
+      <Component Id="MagickDll" Guid="*">
+        <File Source="..\Photura\bin\x64\Release\net10.0-windows\Magick.NET-Q16-AnyCPU.dll"/>
+      </Component>
+      <Component Id="MagickCore" Guid="*">
+        <File Source="..\Photura\bin\x64\Release\net10.0-windows\Magick.NET.Core.dll"/>
+      </Component>
+    </ComponentGroup>
+  </Fragment>
+
+  <!-- Magick.NET native runtime -->
+  <Fragment>
+    <ComponentGroup Id="RuntimeComponents" Directory="WinX64NativeFolder">
+      <Component Id="MagickNative" Guid="*">
+        <File Source="..\Photura\bin\x64\Release\net10.0-windows\runtimes\win-x64\native\Magick.Native-Q16-x64.dll"
+              KeyPath="yes"/>
+      </Component>
+    </ComponentGroup>
+  </Fragment>
+
+</Wix>
