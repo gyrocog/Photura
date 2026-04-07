@@ -3,7 +3,7 @@
      xmlns:ui="http://wixtoolset.org/schemas/v4/wxs/ui">
 
   <Package Name="Photura"
-           Manufacturer="Goran"
+           Manufacturer="Mrgy"
            Version="1.0.0"
            UpgradeCode="4e2cdd23-3da1-4ae7-9e27-101493e2ebb4"
            Language="1033"
@@ -18,11 +18,7 @@
 
     <ui:WixUI Id="WixUI_InstallDir" />
     <Property Id="WIXUI_INSTALLDIR" Value="INSTALLFOLDER" />
-
-    <!-- Point to our custom license -->
     <WixVariable Id="WixUILicenseRtf" Value="License.rtf" />
-
-    <!-- Force 64-bit install path -->
     <Property Id="MSIINSTALLPERUSER" Value="0"/>
 
     <Feature Id="Main" Title="Photura" Level="1">
@@ -30,6 +26,7 @@
       <ComponentGroupRef Id="RuntimeComponents" />
       <ComponentRef Id="ApplicationShortcut" />
       <ComponentRef Id="RegistryEntries" />
+      <ComponentRef Id="FileTypeRegistration" />
     </Feature>
 
     <!-- Directory structure -->
@@ -66,10 +63,101 @@
       </Component>
     </DirectoryRef>
 
-    <!-- Registry entries -->
+    <!-- File type icon + ProgID registration -->
+    <DirectoryRef Id="INSTALLFOLDER">
+      <Component Id="FileTypeRegistration" Guid="*">
+
+        <!-- ProgID: defines what "a Photura image file" looks like -->
+        <RegistryKey Root="HKLM" Key="SOFTWARE\Classes\Photura.ImageFile">
+          <RegistryValue Type="string" Value="Image File"/>
+        </RegistryKey>
+        <RegistryKey Root="HKLM"
+                     Key="SOFTWARE\Classes\Photura.ImageFile\DefaultIcon">
+          <RegistryValue Type="string"
+                         Value="[INSTALLFOLDER]photos.ico"/>
+        </RegistryKey>
+        <RegistryKey Root="HKLM"
+                     Key="SOFTWARE\Classes\Photura.ImageFile\shell\open\command">
+          <RegistryValue Type="string"
+                         Value="&quot;[INSTALLFOLDER]Photura.exe&quot; &quot;%1&quot;"/>
+        </RegistryKey>
+
+        <!-- Associate each extension with the ProgID -->
+        <!-- This makes Windows show our icon for these file types -->
+        <RegistryKey Root="HKLM" Key="SOFTWARE\Classes\.jpg">
+          <RegistryValue Type="string" Name="Photura.Backup" Value=""/>
+          <RegistryValue Type="string" Value="Photura.ImageFile"/>
+        </RegistryKey>
+        <RegistryKey Root="HKLM" Key="SOFTWARE\Classes\.jpeg">
+          <RegistryValue Type="string" Value="Photura.ImageFile"/>
+        </RegistryKey>
+        <RegistryKey Root="HKLM" Key="SOFTWARE\Classes\.png">
+          <RegistryValue Type="string" Value="Photura.ImageFile"/>
+        </RegistryKey>
+        <RegistryKey Root="HKLM" Key="SOFTWARE\Classes\.bmp">
+          <RegistryValue Type="string" Value="Photura.ImageFile"/>
+        </RegistryKey>
+        <RegistryKey Root="HKLM" Key="SOFTWARE\Classes\.gif">
+          <RegistryValue Type="string" Value="Photura.ImageFile"/>
+        </RegistryKey>
+        <RegistryKey Root="HKLM" Key="SOFTWARE\Classes\.tif">
+          <RegistryValue Type="string" Value="Photura.ImageFile"/>
+        </RegistryKey>
+        <RegistryKey Root="HKLM" Key="SOFTWARE\Classes\.tiff">
+          <RegistryValue Type="string" Value="Photura.ImageFile"/>
+        </RegistryKey>
+        <RegistryKey Root="HKLM" Key="SOFTWARE\Classes\.webp">
+          <RegistryValue Type="string" Value="Photura.ImageFile"/>
+        </RegistryKey>
+        <RegistryKey Root="HKLM" Key="SOFTWARE\Classes\.psd">
+          <RegistryValue Type="string" Value="Photura.ImageFile"/>
+        </RegistryKey>
+        <RegistryKey Root="HKLM" Key="SOFTWARE\Classes\.ico">
+          <RegistryValue Type="string" Value="Photura.ImageFile"/>
+        </RegistryKey>
+        <RegistryKey Root="HKLM" Key="SOFTWARE\Classes\.heic">
+          <RegistryValue Type="string" Value="Photura.ImageFile"/>
+        </RegistryKey>
+        <RegistryKey Root="HKLM" Key="SOFTWARE\Classes\.heif">
+          <RegistryValue Type="string" Value="Photura.ImageFile"/>
+        </RegistryKey>
+        <RegistryKey Root="HKLM" Key="SOFTWARE\Classes\.dng">
+          <RegistryValue Type="string" Value="Photura.ImageFile"/>
+        </RegistryKey>
+        <RegistryKey Root="HKLM" Key="SOFTWARE\Classes\.cr2">
+          <RegistryValue Type="string" Value="Photura.ImageFile"/>
+        </RegistryKey>
+        <RegistryKey Root="HKLM" Key="SOFTWARE\Classes\.nef">
+          <RegistryValue Type="string" Value="Photura.ImageFile"/>
+        </RegistryKey>
+        <RegistryKey Root="HKLM" Key="SOFTWARE\Classes\.arw">
+          <RegistryValue Type="string" Value="Photura.ImageFile"/>
+        </RegistryKey>
+        <RegistryKey Root="HKLM" Key="SOFTWARE\Classes\.orf">
+          <RegistryValue Type="string" Value="Photura.ImageFile"/>
+        </RegistryKey>
+        <RegistryKey Root="HKLM" Key="SOFTWARE\Classes\.rw2">
+          <RegistryValue Type="string" Value="Photura.ImageFile"/>
+        </RegistryKey>
+        <RegistryKey Root="HKLM" Key="SOFTWARE\Classes\.raf">
+          <RegistryValue Type="string" Value="Photura.ImageFile"/>
+        </RegistryKey>
+        <RegistryKey Root="HKLM" Key="SOFTWARE\Classes\.avif">
+          <RegistryValue Type="string" Value="Photura.ImageFile"/>
+        </RegistryKey>
+
+        <RegistryValue Root="HKLM"
+                       Key="SOFTWARE\Photura"
+                       Name="InstallPath"
+                       Type="string"
+                       Value="[INSTALLFOLDER]Photura.exe"
+                       KeyPath="yes"/>
+      </Component>
+    </DirectoryRef>
+
+    <!-- Open With + app registration -->
     <DirectoryRef Id="INSTALLFOLDER">
       <Component Id="RegistryEntries" Guid="*">
-
         <RegistryKey Root="HKLM" Key="SOFTWARE\Classes\Applications\Photura.exe">
           <RegistryValue Type="string" Name="FriendlyAppName" Value="Photura"/>
         </RegistryKey>
@@ -78,7 +166,6 @@
           <RegistryValue Type="string"
                          Value="&quot;[INSTALLFOLDER]Photura.exe&quot; &quot;%1&quot;"/>
         </RegistryKey>
-
         <RegistryKey Root="HKLM"
                      Key="SOFTWARE\Classes\Applications\Photura.exe\SupportedTypes">
           <RegistryValue Type="string" Name=".jpg"  Value=""/>
@@ -103,7 +190,6 @@
           <RegistryValue Type="string" Name=".avif" Value=""/>
         </RegistryKey>
 
-        <!-- Open With registration for each format -->
         <RegistryKey Root="HKLM" Key="SOFTWARE\Classes\.jpg\OpenWithList\Photura.exe">
           <RegistryValue Type="string" Value=""/>
         </RegistryKey>
@@ -147,11 +233,10 @@
           <RegistryValue Type="string" Value=""/>
         </RegistryKey>
 
-        <RegistryValue Root="HKLM"
-                       Key="SOFTWARE\Photura"
-                       Name="InstallPath"
-                       Type="string"
-                       Value="[INSTALLFOLDER]Photura.exe"
+        <RegistryValue Root="HKCU"
+                       Key="Software\Photura\Installer"
+                       Name="Registered"
+                       Type="integer" Value="1"
                        KeyPath="yes"/>
       </Component>
     </DirectoryRef>
@@ -183,6 +268,9 @@
       </Component>
       <Component Id="MagickCore" Guid="*">
         <File Source="..\Photura\bin\x64\Release\net10.0-windows\Magick.NET.Core.dll"/>
+      </Component>
+      <Component Id="PhotosIcon" Guid="*">
+        <File Source="..\Photura\Assets\photos.ico"/>
       </Component>
     </ComponentGroup>
   </Fragment>

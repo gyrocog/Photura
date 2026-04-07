@@ -55,15 +55,17 @@ namespace Photura.Views
             ImageCanvas.MouseMove += ImageCanvas_MouseMove;
         }
 
-        // ── Compare toggle ────────────────────────────────────────
-        private void CompareToggle_Checked(object sender, RoutedEventArgs e)
+        // ── Compare button ────────────────────────────────────────
+        private void CompareBtn_MouseDown(object sender, MouseButtonEventArgs e)
         {
             _vm.IsComparing = true;
+            e.Handled = true;
         }
 
-        private void CompareToggle_Unchecked(object sender, RoutedEventArgs e)
+        private void CompareBtn_MouseUp(object sender, MouseButtonEventArgs e)
         {
             _vm.IsComparing = false;
+            e.Handled = true;
         }
 
         // ── Scene tabs ────────────────────────────────────────────

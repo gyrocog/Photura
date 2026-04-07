@@ -65,14 +65,14 @@
                                 Visibility="Collapsed"/>
 
                     <!-- Compare toggle -->
-                    <ToggleButton x:Name="CompareToggle"
-                                  Style="{DynamicResource ToggleButtonStyle}"
-                                  Margin="0,0,8,0"
-                                  ToolTip="Hold to compare with original"
-                                  Checked="CompareToggle_Checked"
-                                  Unchecked="CompareToggle_Unchecked">
+                    <Button x:Name="CompareBtn"
+                        Style="{DynamicResource ToolButtonStyle}"
+                        Margin="0,0,8,0"
+                        ToolTip="Hold to compare with original"
+                        PreviewMouseLeftButtonDown="CompareBtn_MouseDown"
+                        PreviewMouseLeftButtonUp="CompareBtn_MouseUp">
                         👁  Original
-                    </ToggleButton>
+                    </Button>
 
                     <Button Style="{DynamicResource ToolButtonStyle}"
                             Command="{Binding SaveAsCommand}"

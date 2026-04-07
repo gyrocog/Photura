@@ -26,6 +26,7 @@
     <SolidColorBrush x:Key="OverlayBrush"       Color="#99000000"/>
     <SolidColorBrush x:Key="CropHandleBrush"    Color="#FFFFFFFF"/>
     <SolidColorBrush x:Key="CropBorderBrush"    Color="#FFFFFFFF"/>
+    <SolidColorBrush x:Key="InputBackgroundBrush" Color="#F0F0F0"/>
 
     <!-- ===== BUTTON STYLE ===== -->
     <Style x:Key="ToolButtonStyle" TargetType="Button">
@@ -250,5 +251,37 @@
         <Setter Property="Margin"     Value="0,10,0,10"/>
         <Setter Property="Height"     Value="1"/>
     </Style>
+
+  <!-- Sidebar styles -->
+  <Style x:Key="SidebarGroupHeaderStyle" TargetType="TextBlock">
+    <Setter Property="FontSize" Value="10"/>
+    <Setter Property="FontWeight" Value="SemiBold"/>
+    <Setter Property="FontFamily" Value="Segoe UI"/>
+    <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}"/>
+    <Setter Property="Margin" Value="0,0,0,8"/>
+  </Style>
+
+  <Style x:Key="SidebarLabelStyle" TargetType="TextBlock">
+    <Setter Property="FontSize" Value="10"/>
+    <Setter Property="FontFamily" Value="Segoe UI"/>
+    <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}"/>
+    <Setter Property="Margin" Value="0,0,0,2"/>
+  </Style>
+
+  <Style x:Key="SidebarValueStyle" TargetType="TextBlock">
+    <Setter Property="FontSize" Value="12"/>
+    <Setter Property="FontFamily" Value="Segoe UI"/>
+    <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
+  </Style>
+
+  <Style x:Key="SidebarTextBoxStyle" TargetType="TextBox">
+    <Setter Property="FontSize" Value="12"/>
+    <Setter Property="FontFamily" Value="Segoe UI"/>
+    <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
+    <Setter Property="Background" Value="{DynamicResource InputBackgroundBrush}"/>
+    <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}"/>
+    <Setter Property="BorderThickness" Value="1"/>
+    <Setter Property="Padding" Value="6,4"/>
+  </Style>
 
 </ResourceDictionary>

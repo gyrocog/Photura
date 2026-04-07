@@ -1,0 +1,249 @@
+﻿<UserControl x:Class="Photura.Controls.InfoSidebar"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Width="300">
+    <Border Background="{DynamicResource ScenePanelBrush}"
+            BorderBrush="{DynamicResource BorderBrush}"
+            BorderThickness="1,0,0,0">
+        <ScrollViewer VerticalScrollBarVisibility="Auto"
+                      Padding="0,0,4,0">
+            <StackPanel Margin="16,16,16,16">
+
+                <!-- FILE GROUP -->
+                <TextBlock Text="FILE"
+                           Style="{DynamicResource SidebarGroupHeaderStyle}"/>
+
+                <TextBlock Text="Name"
+                           Style="{DynamicResource SidebarLabelStyle}"/>
+                <Grid Margin="0,0,0,8">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBox x:Name="FileNameBox"
+                             Grid.Column="0"
+                             Style="{DynamicResource SidebarTextBoxStyle}"
+                             KeyDown="FileNameBox_KeyDown"/>
+                    <Button Grid.Column="1"
+                            Style="{DynamicResource ToolButtonStyle}"
+                            Margin="4,0,0,0" Padding="6,4"
+                            Click="RenameConfirm_Click"
+                            ToolTip="Rename (Enter)">
+                        OK
+                    </Button>
+                </Grid>
+
+                <TextBlock Text="Location"
+                           Style="{DynamicResource SidebarLabelStyle}"/>
+                <Grid Margin="0,0,0,8">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock x:Name="PathLabel"
+                               Grid.Column="0"
+                               Style="{DynamicResource SidebarValueStyle}"
+                               TextWrapping="Wrap"
+                               Cursor="Hand"
+                               MouseLeftButtonUp="PathLabel_Click"
+                               Foreground="{DynamicResource AccentBrush}"
+                               ToolTip="Click to open in Explorer"/>
+                    <Button Grid.Column="1"
+                            Style="{DynamicResource ToolButtonStyle}"
+                            Margin="4,0,0,0" Padding="6,4"
+                            Click="CopyPath_Click"
+                            ToolTip="Copy path to clipboard">
+                        Copy
+                    </Button>
+                    <Button Grid.Column="2"
+                            Style="{DynamicResource ToolButtonStyle}"
+                            Margin="4,0,0,0" Padding="6,4"
+                            Click="OpenInExplorer_Click"
+                            ToolTip="Open in Explorer">
+                        Open
+                    </Button>
+                </Grid>
+
+                <Separator Style="{DynamicResource PanelSeparatorStyle}"/>
+
+                <!-- IMAGE GROUP -->
+                <TextBlock Text="IMAGE"
+                           Style="{DynamicResource SidebarGroupHeaderStyle}"/>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Grid.Column="0">
+                        <TextBlock Text="Dimensions"
+                                   Style="{DynamicResource SidebarLabelStyle}"/>
+                        <TextBlock x:Name="PixelSizeLabel"
+                                   Style="{DynamicResource SidebarValueStyle}"
+                                   Margin="0,0,0,8"/>
+                        <TextBlock Text="File Size"
+                                   Style="{DynamicResource SidebarLabelStyle}"/>
+                        <TextBlock x:Name="FileSizeLabel"
+                                   Style="{DynamicResource SidebarValueStyle}"
+                                   Margin="0,0,0,8"/>
+                    </StackPanel>
+                    <StackPanel Grid.Column="1">
+                        <TextBlock Text="DPI"
+                                   Style="{DynamicResource SidebarLabelStyle}"/>
+                        <TextBlock x:Name="DpiLabel"
+                                   Style="{DynamicResource SidebarValueStyle}"
+                                   Margin="0,0,0,8"/>
+                        <TextBlock Text="Color Depth"
+                                   Style="{DynamicResource SidebarLabelStyle}"/>
+                        <TextBlock x:Name="ColorDepthLabel"
+                                   Style="{DynamicResource SidebarValueStyle}"
+                                   Margin="0,0,0,8"/>
+                    </StackPanel>
+                </Grid>
+
+                <Separator Style="{DynamicResource PanelSeparatorStyle}"/>
+
+                <!-- DATE AND TIME GROUP -->
+                <TextBlock x:Name="DateTimeHeader"
+                           Text="DATE AND TIME"
+                           Style="{DynamicResource SidebarGroupHeaderStyle}"
+                           Visibility="Collapsed"/>
+                <Grid x:Name="DateTimePanel" Visibility="Collapsed">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Grid.Column="0">
+                        <TextBlock Text="Date"
+                                   Style="{DynamicResource SidebarLabelStyle}"/>
+                        <TextBlock x:Name="DateLabel"
+                                   Style="{DynamicResource SidebarValueStyle}"
+                                   Margin="0,0,0,8"/>
+                    </StackPanel>
+                    <StackPanel Grid.Column="1">
+                        <TextBlock Text="Time"
+                                   Style="{DynamicResource SidebarLabelStyle}"/>
+                        <TextBlock x:Name="TimeLabel"
+                                   Style="{DynamicResource SidebarValueStyle}"
+                                   Margin="0,0,0,8"/>
+                    </StackPanel>
+                </Grid>
+                <Separator x:Name="DateTimeSep"
+                           Style="{DynamicResource PanelSeparatorStyle}"
+                           Visibility="Collapsed"/>
+
+                <!-- LOCATION GROUP -->
+                <TextBlock x:Name="LocationHeader"
+                           Text="LOCATION"
+                           Style="{DynamicResource SidebarGroupHeaderStyle}"
+                           Visibility="Collapsed"/>
+                <StackPanel x:Name="LocationPanel" Visibility="Collapsed">
+                    <TextBlock Text="Place"
+                               Style="{DynamicResource SidebarLabelStyle}"/>
+                    <TextBlock x:Name="PlaceLabel"
+                               Style="{DynamicResource SidebarValueStyle}"
+                               TextWrapping="Wrap"
+                               Margin="0,0,0,8"/>
+                    <TextBlock Text="Coordinates"
+                               Style="{DynamicResource SidebarLabelStyle}"/>
+                    <TextBlock x:Name="CoordinatesLabel"
+                               Style="{DynamicResource SidebarValueStyle}"
+                               Margin="0,0,0,8"/>
+                </StackPanel>
+                <Separator x:Name="LocationSep"
+                           Style="{DynamicResource PanelSeparatorStyle}"
+                           Visibility="Collapsed"/>
+
+                <!-- CAMERA GROUP -->
+                <TextBlock x:Name="CameraHeader"
+                           Text="CAMERA"
+                           Style="{DynamicResource SidebarGroupHeaderStyle}"
+                           Visibility="Collapsed"/>
+                <StackPanel x:Name="CameraPanel" Visibility="Collapsed">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0">
+                            <TextBlock Text="Make"
+                                       Style="{DynamicResource SidebarLabelStyle}"/>
+                            <TextBlock x:Name="MakeLabel"
+                                       Style="{DynamicResource SidebarValueStyle}"
+                                       Margin="0,0,0,8"/>
+                            <TextBlock Text="Focal Length"
+                                       Style="{DynamicResource SidebarLabelStyle}"/>
+                            <TextBlock x:Name="FocalLengthLabel"
+                                       Style="{DynamicResource SidebarValueStyle}"
+                                       Margin="0,0,0,8"/>
+                            <TextBlock Text="Shutter Speed"
+                                       Style="{DynamicResource SidebarLabelStyle}"/>
+                            <TextBlock x:Name="ShutterLabel"
+                                       Style="{DynamicResource SidebarValueStyle}"
+                                       Margin="0,0,0,8"/>
+                            <TextBlock Text="Exposure"
+                                       Style="{DynamicResource SidebarLabelStyle}"/>
+                            <TextBlock x:Name="ExposureLabel"
+                                       Style="{DynamicResource SidebarValueStyle}"
+                                       Margin="0,0,0,8"/>
+                            <TextBlock Text="White Balance"
+                                       Style="{DynamicResource SidebarLabelStyle}"/>
+                            <TextBlock x:Name="WhiteBalanceLabel"
+                                       Style="{DynamicResource SidebarValueStyle}"
+                                       Margin="0,0,0,8"/>
+                        </StackPanel>
+                        <StackPanel Grid.Column="1">
+                            <TextBlock Text="Model"
+                                       Style="{DynamicResource SidebarLabelStyle}"/>
+                            <TextBlock x:Name="ModelLabel"
+                                       Style="{DynamicResource SidebarValueStyle}"
+                                       TextWrapping="Wrap"
+                                       Margin="0,0,0,8"/>
+                            <TextBlock Text="F-Stop"
+                                       Style="{DynamicResource SidebarLabelStyle}"/>
+                            <TextBlock x:Name="FStopLabel"
+                                       Style="{DynamicResource SidebarValueStyle}"
+                                       Margin="0,0,0,8"/>
+                            <TextBlock Text="ISO"
+                                       Style="{DynamicResource SidebarLabelStyle}"/>
+                            <TextBlock x:Name="IsoLabel"
+                                       Style="{DynamicResource SidebarValueStyle}"
+                                       Margin="0,0,0,8"/>
+                            <TextBlock Text="Flash"
+                                       Style="{DynamicResource SidebarLabelStyle}"/>
+                            <TextBlock x:Name="FlashLabel"
+                                       Style="{DynamicResource SidebarValueStyle}"
+                                       Margin="0,0,0,8"/>
+                        </StackPanel>
+                    </Grid>
+                    <TextBlock Text="Lens"
+                               Style="{DynamicResource SidebarLabelStyle}"/>
+                    <TextBlock x:Name="LensLabel"
+                               Style="{DynamicResource SidebarValueStyle}"
+                               TextWrapping="Wrap"
+                               Margin="0,0,0,8"/>
+                </StackPanel>
+                <Separator x:Name="CameraSep"
+                           Style="{DynamicResource PanelSeparatorStyle}"
+                           Visibility="Collapsed"/>
+
+                <!-- DESCRIPTION GROUP -->
+                <TextBlock x:Name="DescHeader"
+                           Text="DESCRIPTION"
+                           Style="{DynamicResource SidebarGroupHeaderStyle}"
+                           Visibility="Collapsed"/>
+                <StackPanel x:Name="DescPanel" Visibility="Collapsed">
+                    <TextBlock x:Name="DescriptionLabel"
+                               Style="{DynamicResource SidebarValueStyle}"
+                               TextWrapping="Wrap"
+                               Margin="0,0,0,8"/>
+                    <TextBlock x:Name="CopyrightLabel"
+                               Style="{DynamicResource SidebarValueStyle}"
+                               TextWrapping="Wrap"
+                               Foreground="{DynamicResource TextSecondaryBrush}"/>
+                </StackPanel>
+
+            </StackPanel>
+        </ScrollViewer>
+    </Border>
+</UserControl>

@@ -1,8 +1,11 @@
 using System;
+using System.IO;
 using Microsoft.Win32;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using Photura.Models;
+using Photura.Services;
 using Photura.ViewModels;
 
 namespace Photura.Views
@@ -14,16 +17,16 @@ namespace Photura.Views
         private bool _isLoaded = false;
         private double _zoom = 1.0;
 
-        // Image top-left position on the canvas
         private double _imgX = 0;
         private double _imgY = 0;
 
-        // Panning
         private bool _isPanning = false;
         private Point _panStart;
         private double _panStartX;
         private double _panStartY;
 
+        private bool _sidebarOpen = false;
+        private const int SidebarWidth = 300;
         private const string RegKey = @"Software\Photura";
 
         public ViewerView()
@@ -35,27 +38,12 @@ namespace Photura.Views
             _vm.PropertyChanged += Vm_PropertyChanged;
             _vm.EditRequested += OnEditRequested;
 
-            /*
-                        Loaded += (s, e) =>
-                        {
-                            _isLoaded = true;
-                            RestoreWindowState();
-                        };
-
-                        // Sync toggle button to saved theme
-                        Loaded += (s, e) =>
-                        {
-                            ThemeToggle.IsChecked = App.IsDarkTheme;
-                            ThemeToggle.Content = App.IsDarkTheme ? "🌙" : "☀️";
-                        };
-            */
-
             Loaded += (s, e) =>
             {
                 _isLoaded = true;
                 RestoreWindowState();
 
-                // Sync toggle to saved theme WITHOUT triggering the Checked/Unchecked events
+                // Sync theme toggle
                 ThemeToggle.Checked -= ThemeToggle_Checked;
                 ThemeToggle.Unchecked -= ThemeToggle_Unchecked;
                 ThemeToggle.IsChecked = App.IsDarkTheme;
@@ -63,7 +51,6 @@ namespace Photura.Views
                 ThemeToggle.Checked += ThemeToggle_Checked;
                 ThemeToggle.Unchecked += ThemeToggle_Unchecked;
             };
-
         }
 
         public void OpenImageFromPath(string path)
@@ -72,17 +59,14 @@ namespace Photura.Views
             UpdateUI();
         }
 
-        // ── Canvas area ───────────────────────────────────────────
-        // Always read dimensions directly from ImageBorder — never cache stale values
+        // ── Canvas dimensions ─────────────────────────────────────
         private double CanvasW => ImageBorder.ActualWidth;
         private double CanvasH => ImageBorder.ActualHeight;
 
         private void ImageBorder_SizeChanged(object sender, SizeChangedEventArgs e)
         {
-            // Keep Canvas the same size as its container
             ImageCanvas.Width = e.NewSize.Width;
             ImageCanvas.Height = e.NewSize.Height;
-
             if (_isLoaded && _vm.CurrentBitmap != null)
                 FitToWindow();
         }
@@ -103,8 +87,10 @@ namespace Photura.Views
 
                 if (left >= SystemParameters.VirtualScreenLeft &&
                     top >= SystemParameters.VirtualScreenTop &&
-                    left < SystemParameters.VirtualScreenLeft + SystemParameters.VirtualScreenWidth &&
-                    top < SystemParameters.VirtualScreenTop + SystemParameters.VirtualScreenHeight)
+                    left < SystemParameters.VirtualScreenLeft +
+                            SystemParameters.VirtualScreenWidth &&
+                    top < SystemParameters.VirtualScreenTop +
+                            SystemParameters.VirtualScreenHeight)
                 {
                     Left = left;
                     Top = top;
@@ -141,13 +127,72 @@ namespace Photura.Views
         private void Window_StateChanged(object sender, EventArgs e)
             => SaveWindowState();
 
+        // ── Info sidebar ─────────────────────────────────────────
+        private void InfoToggle_Checked(object sender, RoutedEventArgs e)
+            => OpenSidebar();
+
+        private void InfoToggle_Unchecked(object sender, RoutedEventArgs e)
+            => CloseSidebar();
+
+        private void OpenSidebar()
+        {
+            _sidebarOpen = true;
+            SidebarColumn.Width = new GridLength(SidebarWidth);
+            if (_vm.CurrentFile != null)
+                _ = LoadMetadataAsync(_vm.CurrentFile.FullPath);
+        }
+
+        private void CloseSidebar()
+        {
+            _sidebarOpen = false;
+            SidebarColumn.Width = new GridLength(0);
+        }
+
+        private async System.Threading.Tasks.Task LoadMetadataAsync(string path)
+        {
+            var meta = await System.Threading.Tasks.Task.Run(
+                () => MetadataService.ReadAsync(path));
+            InfoSidebarControl.Load(meta);
+        }
+
+        private void InfoSidebar_RenameRequested(string oldPath, string newName)
+        {
+            try
+            {
+                string dir = Path.GetDirectoryName(oldPath) ?? string.Empty;
+                string newPath = Path.Combine(dir, newName);
+
+                if (File.Exists(newPath))
+                {
+                    MessageBox.Show($"A file named '{newName}' already exists.",
+                        "Photura", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+
+                File.Move(oldPath, newPath);
+
+                // Reload folder navigator with new path
+                _vm.OpenImage(newPath);
+                UpdateUI();
+
+                // Reload sidebar with new metadata
+                if (_sidebarOpen)
+                    _ = LoadMetadataAsync(newPath);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Could not rename file:\n{ex.Message}",
+                    "Photura", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
         // ── File open ────────────────────────────────────────────
         private void Open_Click(object sender, RoutedEventArgs e)
         {
             var dlg = new OpenFileDialog
             {
                 Title = "Open Image",
-                Filter = Services.ImageLoader.OpenFileFilter
+                Filter = ImageLoader.OpenFileFilter
             };
             if (dlg.ShowDialog() == true)
             {
@@ -165,7 +210,8 @@ namespace Photura.Views
 
         private void Window_Drop(object sender, DragEventArgs e)
         {
-            if (e.Data.GetData(DataFormats.FileDrop) is string[] files && files.Length > 0)
+            if (e.Data.GetData(DataFormats.FileDrop) is string[] files &&
+                files.Length > 0)
             {
                 _vm.OpenImage(files[0]);
                 UpdateUI();
@@ -181,6 +227,10 @@ namespace Photura.Views
                 _vm.CopyCommand.Execute(null);
             if (e.Key == Key.Delete)
                 _vm.DeleteCommand.Execute(null);
+            if (e.Key == Key.I && Keyboard.Modifiers == ModifierKeys.None)
+            {
+                InfoToggle.IsChecked = !InfoToggle.IsChecked;
+            }
 
             if (_vm.HasImage)
             {
@@ -266,34 +316,27 @@ namespace Photura.Views
             ZoomAroundCenter(e.NewValue / 100.0);
         }
 
-        /// <summary>Zoom keeping the canvas center fixed.</summary>
         private void ZoomAroundCenter(double newZoom)
         {
             if (_vm.CurrentBitmap == null) return;
-            var center = new Point(CanvasW / 2, CanvasH / 2);
-            ZoomAround(center, newZoom);
+            ZoomAround(new Point(CanvasW / 2, CanvasH / 2), newZoom);
         }
 
-        /// <summary>Zoom keeping a specific canvas point fixed.</summary>
         private void ZoomAround(Point anchor, double newZoom)
         {
             if (_vm.CurrentBitmap == null) return;
             newZoom = Math.Clamp(newZoom, 0.02, 8.0);
 
-            // Image-space point under the anchor before zoom
             double ipX = (anchor.X - _imgX) / _zoom;
             double ipY = (anchor.Y - _imgY) / _zoom;
 
             _zoom = newZoom;
-
-            // Reposition so that same image point stays under anchor
             _imgX = anchor.X - ipX * _zoom;
             _imgY = anchor.Y - ipY * _zoom;
 
             ApplyTransform();
         }
 
-        // ── Core: fit, center, apply ──────────────────────────────
         private void FitToWindow()
         {
             if (_vm.CurrentBitmap == null) return;
@@ -305,8 +348,6 @@ namespace Photura.Views
                 w / _vm.CurrentBitmap.PixelWidth,
                 h / _vm.CurrentBitmap.PixelHeight);
             _zoom = Math.Min(fit, 1.0);
-
-            // Center the image
             _imgX = (w - _vm.CurrentBitmap.PixelWidth * _zoom) / 2.0;
             _imgY = (h - _vm.CurrentBitmap.PixelHeight * _zoom) / 2.0;
 
@@ -339,7 +380,8 @@ namespace Photura.Views
                 PrevButton.Visibility = Visibility.Collapsed;
                 NextButton.Visibility = Visibility.Collapsed;
                 FileNameLabel.Text = "Photura";
-                ImageInfoLabel.Text = string.Empty;
+                PixelSizeLabel.Text = string.Empty;
+                FileSizeLabel.Text = string.Empty;
                 PositionLabel.Text = string.Empty;
                 return;
             }
@@ -351,21 +393,44 @@ namespace Photura.Views
             NextButton.Visibility = Visibility.Visible;
 
             FileNameLabel.Text = _vm.FileName;
-            ImageInfoLabel.Text = _vm.ImageSizeText;
             PositionLabel.Text = _vm.PositionText;
 
-            // Let layout settle, then fit
+            // Pixel size in bottom bar — read directly from bitmap if available
+            if (_vm.CurrentBitmap != null)
+                PixelSizeLabel.Text =
+                    $"{_vm.CurrentBitmap.PixelWidth} × {_vm.CurrentBitmap.PixelHeight} px";
+
+            // File size in bottom bar
+            if (_vm.CurrentFile != null)
+            {
+                try
+                {
+                    var fi = new System.IO.FileInfo(_vm.CurrentFile.FullPath);
+                    FileSizeLabel.Text = FormatFileSize(fi.Length);
+                }
+                catch { FileSizeLabel.Text = string.Empty; }
+            }
+
+            // Reload sidebar if open
+            if (_sidebarOpen && _vm.CurrentFile != null)
+                _ = LoadMetadataAsync(_vm.CurrentFile.FullPath);
+
             Dispatcher.BeginInvoke(
                 System.Windows.Threading.DispatcherPriority.Render, () =>
                 {
-                    // Sync canvas size first
                     ImageCanvas.Width = CanvasW;
                     ImageCanvas.Height = CanvasH;
                     FitToWindow();
                 });
         }
 
-        // ── ViewModel events ──────────────────────────────────────
+        private static string FormatFileSize(long bytes)
+        {
+            if (bytes < 1024) return $"{bytes} B";
+            if (bytes < 1024 * 1024) return $"{bytes / 1024.0:0.#} KB";
+            return $"{bytes / (1024.0 * 1024):0.##} MB";
+        }
+
         private void Vm_PropertyChanged(object? sender,
             System.ComponentModel.PropertyChangedEventArgs e)
         {
@@ -374,7 +439,7 @@ namespace Photura.Views
         }
 
         // ── Edit mode ─────────────────────────────────────────────
-        private void OnEditRequested(Models.ImageFile file)
+        private void OnEditRequested(ImageFile file)
         {
             var editView = new EditView(file);
 
