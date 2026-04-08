@@ -175,6 +175,7 @@
           <RegistryValue Type="string" Name=".gif"  Value=""/>
           <RegistryValue Type="string" Name=".tif"  Value=""/>
           <RegistryValue Type="string" Name=".tiff" Value=""/>
+          <RegistryValue Type="string" Name=".tga"  Value=""/>
           <RegistryValue Type="string" Name=".webp" Value=""/>
           <RegistryValue Type="string" Name=".psd"  Value=""/>
           <RegistryValue Type="string" Name=".ico"  Value=""/>
@@ -210,6 +211,9 @@
         </RegistryKey>
         <RegistryKey Root="HKLM" Key="SOFTWARE\Classes\.tiff\OpenWithList\Photura.exe">
           <RegistryValue Type="string" Value=""/>
+        </RegistryKey>
+        <RegistryKey Root="HKLM" Key="SOFTWARE\Classes\.tga">
+          <RegistryValue Type="string" Value="Photura.ImageFile"/>
         </RegistryKey>
         <RegistryKey Root="HKLM" Key="SOFTWARE\Classes\.webp\OpenWithList\Photura.exe">
           <RegistryValue Type="string" Value=""/>

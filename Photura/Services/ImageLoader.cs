@@ -14,24 +14,24 @@ namespace Photura.Services
     public static class ImageLoader
     {
         private static readonly string[] NativeFormats =
-        {
-            ".jpg", ".jpeg", ".png", ".bmp", ".gif", ".tif", ".tiff", ".ico"
-        };
+{
+    ".jpg", ".jpeg", ".png", ".bmp", ".gif", ".tif", ".tiff", ".ico"
+};
 
         public static readonly string[] AllFormats =
         {
-            ".jpg", ".jpeg", ".png", ".bmp", ".gif",
-            ".tif", ".tiff", ".ico", ".webp", ".psd",
-            ".dng", ".cr2", ".cr3", ".nef", ".arw",
-            ".orf", ".rw2", ".raf", ".heic", ".heif", ".avif"
-        };
+    ".jpg", ".jpeg", ".png", ".bmp", ".gif",
+    ".tif", ".tiff", ".ico", ".webp", ".psd",
+    ".tga", ".dng", ".cr2", ".cr3", ".nef", ".arw",
+    ".orf", ".rw2", ".raf", ".heic", ".heif", ".avif"
+};
 
         public static readonly string OpenFileFilter =
             "All Images|*.jpg;*.jpeg;*.png;*.bmp;*.gif;*.tif;*.tiff;*.ico;" +
-            "*.webp;*.psd;*.dng;*.cr2;*.cr3;*.nef;*.arw;*.orf;*.rw2;*.raf;" +
+            "*.webp;*.psd;*.tga;*.dng;*.cr2;*.cr3;*.nef;*.arw;*.orf;*.rw2;*.raf;" +
             "*.heic;*.heif;*.avif|" +
             "JPEG|*.jpg;*.jpeg|PNG|*.png|BMP|*.bmp|TIFF|*.tif;*.tiff|" +
-            "WebP|*.webp|PSD|*.psd|" +
+            "WebP|*.webp|PSD|*.psd|TGA|*.tga|" +
             "RAW|*.dng;*.cr2;*.cr3;*.nef;*.arw;*.orf;*.rw2;*.raf|" +
             "HEIC/HEIF|*.heic;*.heif|ICO|*.ico|All Files|*.*";
 
