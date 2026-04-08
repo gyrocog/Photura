@@ -35,7 +35,7 @@ A lightweight, fast image viewer and editor for Windows — built as a personal 
 
 ## Installation
 
-Download `PhotouraSetup.msi` from the [Releases](https://github.com/gyrocog/Photura/releases) page and run it.
+Download `PhotouraSetup.msi` and run it.
 
 The installer will:
 - Install Photura to `C:\Program Files\Photura\`
