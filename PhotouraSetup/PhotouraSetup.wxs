@@ -145,13 +145,37 @@
         <RegistryKey Root="HKLM" Key="SOFTWARE\Classes\.avif">
           <RegistryValue Type="string" Value="Photura.ImageFile"/>
         </RegistryKey>
+        <RegistryKey Root="HKLM" Key="SOFTWARE\Classes\.tga">
+        <RegistryValue Type="string" Value="Photura.ImageFile"/>
+        </RegistryKey>
+        <RegistryKey Root="HKLM" Key="SOFTWARE\Classes\.j2c">
+          <RegistryValue Type="string" Value="Photura.ImageFile"/>
+        </RegistryKey>
+        <RegistryKey Root="HKLM" Key="SOFTWARE\Classes\.j2k">
+          <RegistryValue Type="string" Value="Photura.ImageFile"/>
+        </RegistryKey>
+        <RegistryKey Root="HKLM" Key="SOFTWARE\Classes\.jp2">
+          <RegistryValue Type="string" Value="Photura.ImageFile"/>
+        </RegistryKey>
+        <RegistryKey Root="HKLM" Key="SOFTWARE\Classes\.exr">
+          <RegistryValue Type="string" Value="Photura.ImageFile"/>
+        </RegistryKey>
+        <RegistryKey Root="HKLM" Key="SOFTWARE\Classes\.hdr">
+          <RegistryValue Type="string" Value="Photura.ImageFile"/>
+        </RegistryKey>
+        <RegistryKey Root="HKLM" Key="SOFTWARE\Classes\.svg">
+          <RegistryValue Type="string" Value="Photura.ImageFile"/>
+        </RegistryKey>
+        <RegistryKey Root="HKLM" Key="SOFTWARE\Classes\.pcx">
+          <RegistryValue Type="string" Value="Photura.ImageFile"/>
+        </RegistryKey>
 
         <RegistryValue Root="HKLM"
-                       Key="SOFTWARE\Photura"
-                       Name="InstallPath"
-                       Type="string"
-                       Value="[INSTALLFOLDER]Photura.exe"
-                       KeyPath="yes"/>
+               Key="SOFTWARE\Classes\Photura.ImageFile"
+               Name="Photura.Registered"
+               Type="integer"
+               Value="1"
+               KeyPath="yes"/>
       </Component>
     </DirectoryRef>
 
@@ -189,6 +213,13 @@
           <RegistryValue Type="string" Name=".rw2"  Value=""/>
           <RegistryValue Type="string" Name=".raf"  Value=""/>
           <RegistryValue Type="string" Name=".avif" Value=""/>
+          <RegistryValue Type="string" Name=".j2c"  Value=""/>
+          <RegistryValue Type="string" Name=".j2k"  Value=""/>
+          <RegistryValue Type="string" Name=".jp2"  Value=""/>
+          <RegistryValue Type="string" Name=".exr"  Value=""/>
+          <RegistryValue Type="string" Name=".hdr"  Value=""/>
+          <RegistryValue Type="string" Name=".svg"  Value=""/>
+          <RegistryValue Type="string" Name=".pcx"  Value=""/>
         </RegistryKey>
 
         <RegistryKey Root="HKLM" Key="SOFTWARE\Classes\.jpg\OpenWithList\Photura.exe">

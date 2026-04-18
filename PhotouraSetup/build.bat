@@ -1,0 +1,1 @@
+wix build PhotouraSetup.wxs -o PhotouraSetup.msi -ext WixToolset.UI.wixext -arch x64

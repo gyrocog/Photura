@@ -14,36 +14,60 @@ namespace Photura.Services
     public static class ImageLoader
     {
         private static readonly string[] NativeFormats =
-{
-    ".jpg", ".jpeg", ".png", ".bmp", ".gif", ".tif", ".tiff", ".ico"
-};
+        {
+            ".jpg", ".jpeg", ".png", ".bmp", ".gif",
+            ".tif", ".tiff", ".ico"
+        };
+
+        // Formats where we need to tell Magick explicitly what format to use
+        private static readonly Dictionary<string, MagickFormat> ExplicitFormats = new()
+        {
+            { ".tga",  MagickFormat.Tga  },
+            { ".exr",  MagickFormat.Exr  },
+            { ".hdr",  MagickFormat.Hdr  },
+            { ".pcx",  MagickFormat.Pcx  },
+            { ".j2c",  MagickFormat.J2c  },
+            { ".j2k",  MagickFormat.J2k  },
+            { ".jp2",  MagickFormat.Jp2  },
+            { ".jpf",  MagickFormat.Jp2  },
+            { ".jpx",  MagickFormat.Jp2  },
+        };
 
         public static readonly string[] AllFormats =
         {
-    ".jpg", ".jpeg", ".png", ".bmp", ".gif",
-    ".tif", ".tiff", ".ico", ".webp", ".psd",
-    ".tga", ".dng", ".cr2", ".cr3", ".nef", ".arw",
-    ".orf", ".rw2", ".raf", ".heic", ".heif", ".avif"
-};
+            ".jpg", ".jpeg", ".png", ".bmp", ".gif",
+            ".tif", ".tiff", ".ico", ".webp", ".psd",
+            ".tga", ".exr", ".hdr", ".pcx", ".svg",
+            ".j2c", ".j2k", ".jp2", ".jpf", ".jpx",
+            ".dng", ".cr2", ".cr3", ".nef", ".arw",
+            ".orf", ".rw2", ".raf", ".heic", ".heif", ".avif"
+        };
 
         public static readonly string OpenFileFilter =
             "All Images|*.jpg;*.jpeg;*.png;*.bmp;*.gif;*.tif;*.tiff;*.ico;" +
-            "*.webp;*.psd;*.tga;*.dng;*.cr2;*.cr3;*.nef;*.arw;*.orf;*.rw2;*.raf;" +
+            "*.webp;*.psd;*.tga;*.exr;*.hdr;*.pcx;*.svg;" +
+            "*.j2c;*.j2k;*.jp2;*.jpf;*.jpx;" +
+            "*.dng;*.cr2;*.cr3;*.nef;*.arw;*.orf;*.rw2;*.raf;" +
             "*.heic;*.heif;*.avif|" +
-            "JPEG|*.jpg;*.jpeg|PNG|*.png|BMP|*.bmp|TIFF|*.tif;*.tiff|" +
-            "WebP|*.webp|PSD|*.psd|TGA|*.tga|" +
+            "JPEG|*.jpg;*.jpeg|" +
+            "PNG|*.png|" +
+            "BMP|*.bmp|" +
+            "TIFF|*.tif;*.tiff|" +
+            "WebP|*.webp|" +
+            "PSD|*.psd|" +
+            "TGA|*.tga|" +
+            "JPEG 2000|*.j2c;*.j2k;*.jp2;*.jpf;*.jpx|" +
+            "HDR|*.exr;*.hdr|" +
+            "SVG|*.svg|" +
             "RAW|*.dng;*.cr2;*.cr3;*.nef;*.arw;*.orf;*.rw2;*.raf|" +
-            "HEIC/HEIF|*.heic;*.heif|ICO|*.ico|All Files|*.*";
+            "HEIC/HEIF|*.heic;*.heif|" +
+            "ICO|*.ico|" +
+            "All Files|*.*";
 
-        // ── Pre-cache ─────────────────────────────────────────────
-        // Keeps the previous, current, and next image decoded in memory
+        // ── Cache ─────────────────────────────────────────────────
         private static readonly Dictionary<string, BitmapSource> _cache = new();
         private static CancellationTokenSource? _prefetchCts;
 
-        /// <summary>
-        /// Pre-fetch adjacent images in the background so scrolling feels instant.
-        /// Call this after loading the current image.
-        /// </summary>
         public static void PrefetchAdjacent(string? prevPath, string? nextPath)
         {
             _prefetchCts?.Cancel();
@@ -62,14 +86,13 @@ namespace Photura.Services
                         if (!token.IsCancellationRequested)
                             lock (_cache) { _cache[path] = bmp; }
                     }
-                    catch { /* prefetch failures are silent */ }
+                    catch { }
                 }
             }, token);
         }
 
         public static void ClearCache() => _cache.Clear();
 
-        // ── Sync load (for Edit mode — already on bg thread via Task.Run) ──
         public static BitmapSource Load(ImageFile file) => Load(file.FullPath);
 
         public static BitmapSource Load(string path)
@@ -84,7 +107,6 @@ namespace Photura.Services
             return bmp;
         }
 
-        // ── Async load for Viewer ─────────────────────────────────
         public static async Task<BitmapSource> LoadAsync(string path)
         {
             lock (_cache)
@@ -92,22 +114,25 @@ namespace Photura.Services
                 if (_cache.TryGetValue(path, out var cached))
                     return cached;
             }
-
             var bmp = await Task.Run(() => LoadInternal(path));
             lock (_cache) { _cache[path] = bmp; }
             return bmp;
         }
 
-        // ── Internal ─────────────────────────────────────────────
         private static BitmapSource LoadInternal(string path)
         {
             string ext = Path.GetExtension(path).ToLowerInvariant();
 
             BitmapSource bitmap;
-            if (ext == ".heic" || ext == ".heif")
+
+            if (ext == ".svg")
+                bitmap = LoadSvg(path);
+            else if (ext == ".heic" || ext == ".heif")
                 bitmap = LoadHeic(path);
             else if (Array.Exists(NativeFormats, e => e == ext))
                 bitmap = LoadNative(path);
+            else if (ExplicitFormats.TryGetValue(ext, out var magickFormat))
+                bitmap = LoadViaMagickExplicit(path, magickFormat);
             else
                 bitmap = LoadViaMagick(path);
 
@@ -148,6 +173,29 @@ namespace Photura.Services
             return bmp;
         }
 
+        private static BitmapSource LoadSvg(string path)
+        {
+            // WPF can render SVG natively via XamlReader for simple SVGs
+            // but for full compatibility we use Magick.NET to rasterize
+            using var image = new MagickImage();
+            image.Read(path);
+            image.Format = MagickFormat.Png;
+
+            // Rasterize at a reasonable resolution
+            if (image.Width < 512)
+                image.Resize(1024, 1024);
+
+            byte[] bytes = image.ToByteArray();
+            using var ms = new MemoryStream(bytes);
+            var bmp = new BitmapImage();
+            bmp.BeginInit();
+            bmp.StreamSource = ms;
+            bmp.CacheOption = BitmapCacheOption.OnLoad;
+            bmp.EndInit();
+            bmp.Freeze();
+            return bmp;
+        }
+
         private static BitmapSource LoadHeic(string path)
         {
             try { return LoadViaMagick(path); }
@@ -156,7 +204,6 @@ namespace Photura.Services
                 ex.Message.Contains("delegate") ||
                 ex.Message.Contains("no decode delegate"))
             {
-                // Must show MessageBox on UI thread
                 Application.Current.Dispatcher.Invoke(() =>
                 {
                     var result = MessageBox.Show(
@@ -176,6 +223,29 @@ namespace Photura.Services
                 });
                 throw new OperationCanceledException("HEIC codec not installed.");
             }
+        }
+
+        /// <summary>
+        /// Load via Magick.NET with an explicit format hint.
+        /// Used for formats that Magick can't reliably auto-detect (e.g. TGA).
+        /// </summary>
+        private static BitmapSource LoadViaMagickExplicit(string path,
+            MagickFormat format)
+        {
+            var settings = new MagickReadSettings { Format = format };
+            using var image = new MagickImage(path, settings);
+            image.AutoOrient();
+            image.Format = MagickFormat.Png;
+            byte[] bytes = image.ToByteArray();
+
+            using var ms = new MemoryStream(bytes);
+            var bmp = new BitmapImage();
+            bmp.BeginInit();
+            bmp.StreamSource = ms;
+            bmp.CacheOption = BitmapCacheOption.OnLoad;
+            bmp.EndInit();
+            bmp.Freeze();
+            return bmp;
         }
 
         private static BitmapSource LoadViaMagick(string path)
