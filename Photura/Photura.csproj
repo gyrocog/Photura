@@ -14,7 +14,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Magick.NET-Q16-AnyCPU" Version="14.12.0" />
+    <PackageReference Include="Magick.NET-Q16-AnyCPU" Version="14.*" />
+    <PackageReference Include="CoreJ2K" Version="2.*" />
+    <PackageReference Include="CoreJ2K.Skia" Version="2.*" />
+    <PackageReference Include="SkiaSharp" Version="3.*" />
+    <PackageReference Include="SkiaSharp.NativeAssets.Win32" Version="3.*" />
   </ItemGroup>
 
   <ItemGroup>

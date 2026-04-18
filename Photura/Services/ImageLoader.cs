@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using ImageMagick;
+using CoreJ2K;
 using Photura.Models;
 
 namespace Photura.Services
@@ -49,20 +51,12 @@ namespace Photura.Services
             "*.j2c;*.j2k;*.jp2;*.jpf;*.jpx;" +
             "*.dng;*.cr2;*.cr3;*.nef;*.arw;*.orf;*.rw2;*.raf;" +
             "*.heic;*.heif;*.avif|" +
-            "JPEG|*.jpg;*.jpeg|" +
-            "PNG|*.png|" +
-            "BMP|*.bmp|" +
-            "TIFF|*.tif;*.tiff|" +
-            "WebP|*.webp|" +
-            "PSD|*.psd|" +
-            "TGA|*.tga|" +
+            "JPEG|*.jpg;*.jpeg|PNG|*.png|BMP|*.bmp|TIFF|*.tif;*.tiff|" +
+            "WebP|*.webp|PSD|*.psd|TGA|*.tga|" +
             "JPEG 2000|*.j2c;*.j2k;*.jp2;*.jpf;*.jpx|" +
-            "HDR|*.exr;*.hdr|" +
-            "SVG|*.svg|" +
+            "HDR|*.exr;*.hdr|SVG|*.svg|" +
             "RAW|*.dng;*.cr2;*.cr3;*.nef;*.arw;*.orf;*.rw2;*.raf|" +
-            "HEIC/HEIF|*.heic;*.heif|" +
-            "ICO|*.ico|" +
-            "All Files|*.*";
+            "HEIC/HEIF|*.heic;*.heif|ICO|*.ico|All Files|*.*";
 
         // ── Cache ─────────────────────────────────────────────────
         private static readonly Dictionary<string, BitmapSource> _cache = new();
@@ -129,6 +123,9 @@ namespace Photura.Services
                 bitmap = LoadSvg(path);
             else if (ext == ".heic" || ext == ".heif")
                 bitmap = LoadHeic(path);
+            else if (ext == ".j2c" || ext == ".j2k" ||
+                     ext == ".jp2" || ext == ".jpf" || ext == ".jpx")
+                bitmap = LoadJpeg2000(path);
             else if (Array.Exists(NativeFormats, e => e == ext))
                 bitmap = LoadNative(path);
             else if (ExplicitFormats.TryGetValue(ext, out var magickFormat))
@@ -193,6 +190,32 @@ namespace Photura.Services
             bmp.CacheOption = BitmapCacheOption.OnLoad;
             bmp.EndInit();
             bmp.Freeze();
+            return bmp;
+        }
+
+        private static BitmapSource LoadJpeg2000(string path)
+        {
+            using var fs = File.OpenRead(path);
+            var j2kImage = J2kImage.FromStream(fs);
+            var skBitmap = j2kImage.As<SkiaSharp.SKBitmap>();
+
+            // Convert SKBitmap pixels to WPF BitmapSource
+            // SkiaSharp uses BGRA8888 by default on Windows
+            var converted = skBitmap.Copy(SkiaSharp.SKColorType.Bgra8888);
+            int w = converted.Width;
+            int h = converted.Height;
+            int stride = w * 4;
+
+            byte[] pixels = new byte[h * stride];
+            System.Runtime.InteropServices.Marshal.Copy(
+                converted.GetPixels(), pixels, 0, pixels.Length);
+
+            var bmp = BitmapSource.Create(w, h, 96, 96,
+                PixelFormats.Bgra32, null, pixels, stride);
+            bmp.Freeze();
+
+            converted.Dispose();
+            skBitmap.Dispose();
             return bmp;
         }
 

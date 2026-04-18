@@ -307,6 +307,15 @@
       <Component Id="PhotosIcon" Guid="*">
         <File Source="..\Photura\Assets\photos.ico"/>
       </Component>
+      <Component Id="CoreJ2KDll" Guid="*">
+        <File Source="..\Photura\bin\x64\Release\net10.0-windows\CoreJ2K.dll"/>
+      </Component>
+      <Component Id="CoreJ2KSkiaDll" Guid="*">
+        <File Source="..\Photura\bin\x64\Release\net10.0-windows\CoreJ2K.Skia.dll"/>
+      </Component>
+      <Component Id="SkiaDll" Guid="*">
+        <File Source="..\Photura\bin\x64\Release\net10.0-windows\SkiaSharp.dll"/>
+      </Component>
     </ComponentGroup>
   </Fragment>
 
@@ -317,7 +326,10 @@
         <File Source="..\Photura\bin\x64\Release\net10.0-windows\runtimes\win-x64\native\Magick.Native-Q16-x64.dll"
               KeyPath="yes"/>
       </Component>
+      <Component Id="SkiaNative" Guid="*">
+        <File Source="..\Photura\bin\x64\Release\net10.0-windows\runtimes\win-x64\native\libSkiaSharp.dll"/>
+      </Component>
     </ComponentGroup>
-  </Fragment>
+</Fragment>
 
 </Wix>
